@@ -1,25 +1,25 @@
-# PE-DETR: Physics-Enhanced DETR for Object Detection
+# PE-DETR: Physics-Enhanced DETR for Mesoscale Eddy Detection
 
-This is the implementation of the paper: **Physics-Enhanced DETR for Object Detection**
+This is the implementation of the paper: **Physics-Enhanced DETR for Mesoscale Eddy Detection**
 
-> ⚠ **Note:** This is a research implementation based on DINO with physics-enhanced modules for improved object detection performance.
+> ⚠ **Note:** This is a research implementation based on DINO with physics-enhanced modules for mesoscale eddy detection.
 
 ## Key Features
-Physics-enhanced object detection with improved performance
-- **Physics Integration**. Incorporates optical flow and physics-based features for enhanced detection.
-- **Multi-Scale Processing**. Supports multi-scale physics heads with fusion capabilities.
+Physics-enhanced mesoscale eddy detection with improved performance
+- **Physics Integration**. Incorporates optical flow and physics-based features for enhanced eddy detection.
+- **Multi-Scale Processing**. Supports multi-scale physics heads with fusion capabilities for various eddy sizes.
 - **Flexible Architecture**. Compatible with various DETR variants (Deformable DETR, DINO, H-DETR).
 - **Efficient Design**. Maintains computational efficiency while adding physics enhancements.
 
 ## Datasets
-Experiments on **人工标注的中尺度涡数据集**:
-中尺度涡旋检测数据集 (Mesoscale Eddy Detection Dataset)
+Experiments on **manually annotated mesoscale eddy dataset**:
+Mesoscale Eddy Detection Dataset
 
 |#|Datasets|Description|Download|
 |---|----|-----|-----|
-|1|中尺度涡数据集|人工标注的中尺度涡旋检测数据集|Contact authors for access|
+|1|Mesoscale Eddy Dataset|Manually annotated mesoscale eddy detection dataset|Contact authors for access|
 
-> **Note:** 本数据集为人工标注的中尺度涡旋检测数据集，包含反气旋和气旋两类涡旋的标注信息。
+> **Note:** This dataset is a manually annotated mesoscale eddy detection dataset, containing annotations for both anticyclonic and cyclonic eddies.
 
 ## Environment
 ```bash
@@ -151,7 +151,7 @@ If you find our work helpful for your research, please consider citing:
 
 ```BibTeX
 @article{pe_detr_2024,
-  title={PE-DETR: Physics-Enhanced DETR for Object Detection},
+  title={PE-DETR: Physics-Enhanced DETR for Mesoscale Eddy Detection},
   author={Your Name and Co-authors},
   journal={arXiv preprint arXiv:XXXX.XXXXX},
   year={2024}
