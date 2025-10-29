@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------
-# DINO
+# PEDETR
 # Copyright (c) 2022 IDEA. All Rights Reserved.
 # Licensed under the Apache License, Version 2.0 [see LICENSE for details]
 # ------------------------------------------------------------------------
@@ -19,7 +19,7 @@ import torch.nn.functional as F
 
 def prepare_for_cdn(dn_args, training, num_queries, num_classes, hidden_dim, label_enc):
     """
-        A major difference of DINO from DN-DETR is that the author process pattern embedding pattern embedding in its detector
+        A major difference of PEDETR from DN-DETR is that the author process pattern embedding pattern embedding in its detector
         forward function and use learnable tgt embedding, so we change this function a little bit.
         :param dn_args: targets, dn_number, label_noise_ratio, box_noise_scale
         :param training: if it is training or inference

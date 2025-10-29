@@ -22,7 +22,7 @@ from .utils import sigmoid_focal_loss, MLP
 
 from ..registry import MODULE_BUILD_FUNCS
 from .dn_components import prepare_for_cdn,dn_post_process
-class DINO(nn.Module):
+class PEDETR(nn.Module):
     """ This is the Cross-Attention Detector module that performs object detection """
     def __init__(self, backbone, transformer, num_classes, num_queries, 
                     aux_loss=False, iter_update=False,
@@ -856,7 +856,7 @@ def build_dino(args):
         dec_pred_bbox_embed_share = True
 
 
-    model = DINO(
+    model = PEDETR(
         backbone,
         transformer,
         num_classes=num_classes,
