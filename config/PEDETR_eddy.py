@@ -1,17 +1,49 @@
-_base_ = ['coco_transformer.py']
+"""
+PE-DETR single-file config for mesoscale eddy detection (self-contained).
+This consolidates settings that were previously split across
+config/DINO/DINO_4scale_cocoeast.py and config/DINO/coco_transformer.py
+into a single configuration file for simpler usage and distribution.
+"""
 
-num_classes=91
+# ---- Data augmentation / encoder-decoder shared knobs (from coco_transformer.py) ----
+data_aug_scales = [480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800]
+data_aug_max_size = 1333
+data_aug_scales2_resize = [400, 500, 600]
+data_aug_scales2_crop = [384, 600]
 
-lr = 0.0001
+data_aug_scale_overlap = None
+
+dim_feedforward_enc = 2048
+dim_feedforward_dec = 2048
+
+use_pytorch_version = False
+value_proj_after = False
+
+num_topk = 1000
+small_expand = True
+num_expansion = 3
+enc_scale = 3
+
+drop_lr_now = False
+deformable_use_checkpoint = False
+same_loc = False
+proj_key = False
+key_aware = False
+
+# ---- Task/Dataset specific (from DINO_4scale_cocoeast.py) ----
+# Two classes: Anticyclone(0) and Cyclone(1)
+num_classes = 2
+
+lr = 1e-4
 param_dict_type = 'default'
-lr_backbone = 1e-05
+lr_backbone = 1e-5
 lr_backbone_names = ['backbone.0']
 lr_linear_proj_names = ['reference_points', 'sampling_offsets']
 lr_linear_proj_mult = 0.1
 ddetr_lr_param = False
-batch_size = 2
-weight_decay = 0.0001
-epochs = 46
+batch_size = 1
+weight_decay = 1e-4
+epochs = 36
 lr_drop = 30
 save_checkpoint_interval = 1
 clip_max_norm = 0.1
@@ -19,12 +51,10 @@ onecyclelr = False
 multi_step_lr = False
 lr_drop_list = [33, 45]
 
-
 modelname = 'dino'
 frozen_weights = None
-backbone = 'swin_T_224_1k'
-backbone_dir='/comp_robot/rentianhe/weights/swin/'
-use_checkpoint = True
+backbone = 'resnet50'
+use_checkpoint = False
 
 dilation = False
 position_embedding = 'sine'
@@ -87,8 +117,8 @@ interm_loss_coef = 1.0
 no_interm_box_loss = False
 focal_alpha = 0.25
 
-decoder_sa_type = 'sa' # ['sa', 'ca_label', 'ca_content']
-matcher_type = 'HungarianMatcher' # or SimpleMinsumMatcher
+decoder_sa_type = 'sa'  # ['sa', 'ca_label', 'ca_content']
+matcher_type = 'HungarianMatcher'  # or SimpleMinsumMatcher
 decoder_module_seq = ['sa', 'ca', 'ffn']
 nms_iou_threshold = -1
 
@@ -98,10 +128,10 @@ dec_pred_class_embed_share = True
 # for dn
 use_dn = True
 dn_number = 100
-dn_box_noise_scale = 0.4
+dn_box_noise_scale = 1.0
 dn_label_noise_ratio = 0.5
 embed_init_tgt = True
-dn_labelbook_size = 91
+dn_labelbook_size = 2
 
 match_unstable_error = True
 
@@ -111,4 +141,12 @@ ema_decay = 0.9997
 ema_epoch = 0
 
 use_detached_boxes_dec_out = False
+
+# Physics-enhanced defaults (PE-DETR)
+use_physics = True
+phys_channels = 32
+use_optflow_proxy = True
+use_phys_query_init = True
+use_ms_physics = True
+
 
