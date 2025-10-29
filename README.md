@@ -63,7 +63,15 @@ python -m torch.distributed.launch --nproc_per_node=8 main.py \
 
 ## License & Acknowledgment
 
-We are very grateful for these excellent works: [Lite-DETR](https://github.com/IDEA-Research/Lite-DETR), [DINO](https://github.com/IDEA-Research/DINO), [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR), [DETR](https://github.com/facebookresearch/detr). Please follow their respective licenses for usage and redistribution. Thanks for their awesome works.
+Our work is based on the following project:
+
+- [Lite-DETR](https://github.com/IDEA-Research/Lite-DETR)
+
+We also benefited a lot from the following projects:
+
+- [DETR](https://github.com/facebookresearch/detr)
+- [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR)
+- [DINO](https://github.com/IDEA-Research/DINO)
 
 ## 📬 Contact
 
