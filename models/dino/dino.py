@@ -73,12 +73,37 @@ class DINO(nn.Module):
         self.label_enc = nn.Embedding(dn_labelbook_size + 1, hidden_dim)
 
         # ---- Physics modules (optional) ----
+        # NOTE: The source code is currently incomplete and will be fully released once the manuscript is accepted by the journal.
         self.use_physics = use_physics
         self.use_phys_query_init = use_phys_query_init
         self.use_ms_physics = use_ms_physics  
         self.phys_channels = phys_channels
         self.use_optflow_proxy = use_optflow_proxy
         
+        self.phys_ratio_min = 0.60
+        self.phys_ratio_max = 0.85
+        
+        if self.use_physics:
+            if hasattr(self, "num_feature_levels_channel_list"):
+                in_ch_last = self.num_feature_levels_channel_list[-1]
+                self.phys_head = PhysHeadWithOW(in_dim=in_ch_last,
+                                                phys_channels=self.phys_channels,
+                                                smooth=True)
+                self.pv_fusion = PhysVisualFusion(v_channels=in_ch_last,
+                                                  p_channels=self.phys_channels)
+            else:
+                self.phys_head = None
+                self.pv_fusion = None
+            self.phys_heads = None
+            self.phys_fuse = None
+        
+        self.phys_query_init = None
+
+        # setting query dim
+        self.query_dim = query_dim
+        assert query_dim == 4
+        self.random_refpoints_xy = random_refpoints_xy
+        self.fix_refpoints_hw = fix_refpoints_hw
 
         # for dn training
         self.num_patterns = num_patterns
@@ -178,7 +203,18 @@ class DINO(nn.Module):
                 layer.label_embedding = None
             self.label_embedding = None
 
+        for m in [getattr(self, "phys_head", None),
+                  getattr(self, "pv_fusion", None),
+                  getattr(self, "phys_query_init", None)]:
+            if m is not None:
+                ref_param = next(self.parameters(), None)
+                if ref_param is not None:
+                    m.to(ref_param.device)
 
+        self.query_embed = self.transformer.tgt_embed
+
+        if self.use_phys_query_init:
+            self.init_ref_points(self.num_queries)
 
         self._reset_parameters()
 
@@ -258,7 +294,87 @@ class DINO(nn.Module):
                 poss.append(pos_l)
 
         # ---- Physics feature fusion & query init ----
-              if self.dn_number > 0 or targets is not None:
+        # NOTE: The source code is currently incomplete and will be fully released once the manuscript is accepted by the journal.
+        vfeat = srcs[-1]
+        extra_kwargs = {}
+        
+        dev = vfeat.device
+        if getattr(self, "use_physics", False) and hasattr(self, "phys_head") and self.phys_head is not None:
+            self.phys_head = self.phys_head.to(dev)
+        if getattr(self, "use_physics", False) and hasattr(self, "pv_fusion") and self.pv_fusion is not None:
+            self.pv_fusion = self.pv_fusion.to(dev)
+
+        if getattr(self, "use_phys_query_init", False) and hasattr(self, "phys_query_init") and self.phys_query_init is not None:
+            self.phys_query_init = self.phys_query_init.to(dev)
+        
+        if getattr(self, "use_physics", False):
+            dev = vfeat.device
+            if (self.phys_head is None) or (self.pv_fusion is None):
+                in_ch_last = vfeat.shape[1]
+                self.phys_head = PhysHeadWithOW(in_dim=in_ch_last,
+                                                phys_channels=self.phys_channels,
+                                                smooth=True).to(dev)
+                self.pv_fusion = PhysVisualFusion(v_channels=in_ch_last,
+                                                  p_channels=self.phys_channels).to(dev)
+
+            if self.use_ms_physics:
+                if (self.phys_heads is None) or (self.phys_fuse is None):
+                    self.phys_heads = nn.ModuleList([
+                        PhysHeadWithOW(in_dim=feat.shape[1],
+                                      phys_channels=self.phys_channels,
+                                      smooth=True).to(dev)
+                        for feat in srcs
+                    ])
+                    self.phys_fuse = nn.Conv2d(self.phys_channels * len(srcs),
+                                               self.phys_channels, kernel_size=1).to(dev)
+                p_list = []
+                tgt_h, tgt_w = srcs[-1].shape[-2:]
+                for feat, head in zip(srcs, self.phys_heads):
+                    pf = head(feat)
+                    if pf.shape[-2:] != (tgt_h, tgt_w):
+                        pf = F.interpolate(pf, size=(tgt_h, tgt_w), mode="bilinear", align_corners=False)
+                    p_list.append(pf)
+                pfeat = self.phys_fuse(torch.cat(p_list, dim=1))
+            else:
+                pfeat = self.phys_head(vfeat)
+
+            vfeat = self.pv_fusion(vfeat, pfeat)
+            srcs[-1] = vfeat 
+        else:
+            pfeat = vfeat
+
+        if getattr(self, "use_phys_query_init", False):
+            need_create = (not hasattr(self, "phys_query_init")) or (self.phys_query_init is None)
+            if need_create:
+                from .physics import QueryInitializer
+                v_ch = vfeat.shape[1]
+                p_ch = pfeat.shape[1]
+                embed_dim = getattr(self, "hidden_dim", v_ch)
+                num_q = getattr(self, "num_queries", 300)
+                self.phys_query_init = QueryInitializer(
+                    v_channels=v_ch, p_channels=p_ch,
+                    num_queries=num_q, embed_dim=embed_dim
+                ).to(vfeat.device)
+            
+            q_ph, ref_ph = self.phys_query_init(vfeat, pfeat)
+            B, K_phys, D = q_ph.shape
+            K_total = self.num_queries
+            assert K_phys <= K_total, f"phys queries {K_phys} > total {K_total}"
+
+            learnable_q = self.query_embed.weight[:K_total]
+            learnable_ref = self.refpoint_embed.weight[:K_total]
+
+            q_mix = learnable_q.unsqueeze(0).expand(B, -1, -1).clone()
+            ref_mix = learnable_ref.unsqueeze(0).expand(B, -1, -1).clone()
+
+            q_mix[:, :K_phys, :] = q_ph
+            ref_mix[:, :K_phys, :] = ref_ph
+
+            tgt = q_mix
+            ref_points = ref_mix 
+
+
+        if self.dn_number > 0 or targets is not None:
             input_query_label, input_query_bbox, attn_mask, dn_meta =\
                 prepare_for_cdn(dn_args=(targets, self.dn_number, self.dn_label_noise_ratio, self.dn_box_noise_scale),
                                 training=self.training,num_queries=self.num_queries,num_classes=self.num_classes,
@@ -381,7 +497,6 @@ class SetCriterion(nn.Module):
         losses = {'loss_ce': loss_ce}
 
         if log:
-            # TODO this should probably be a separate loss, not hacked in this one here
             losses['class_error'] = 100 - accuracy(src_logits[idx], target_classes_o)[0]
         return losses
 
@@ -438,7 +553,6 @@ class SetCriterion(nn.Module):
         src_masks = outputs["pred_masks"]
         src_masks = src_masks[src_idx]
         masks = [t["masks"] for t in targets]
-        # TODO use valid to mask invalid areas due to padding in loss
         target_masks, valid = nested_tensor_from_tensor_list(masks).decompose()
         target_masks = target_masks.to(src_masks)
         target_masks = target_masks[tgt_idx]
@@ -794,7 +908,6 @@ def build_dino(args):
         weight_dict["loss_dice"] = args.dice_loss_coef
     clean_weight_dict = copy.deepcopy(weight_dict)
 
-    # TODO this is a hack
     if args.aux_loss:
         aux_weight_dict = {}
         for i in range(args.dec_layers - 1):
