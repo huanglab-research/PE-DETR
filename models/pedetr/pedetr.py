@@ -813,8 +813,8 @@ class PostProcess(nn.Module):
 
         return results
 
-@MODULE_BUILD_FUNCS.registe_with_name(module_name='dino')
-def build_dino(args):
+@MODULE_BUILD_FUNCS.registe_with_name(module_name='pedetr')
+def build_pedetr(args):
     # the `num_classes` naming here is somewhat misleading.
     # it indeed corresponds to `max_obj_id + 1`, where max_obj_id
     # is the maximum id for a class in your dataset. For example,

@@ -7,4 +7,4 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 # ------------------------------------------------------------------------
 
-from .pedetr import build_dino
+from .pedetr import build_pedetr
