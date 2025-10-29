@@ -1,8 +1,7 @@
 """
 PE-DETR single-file config for mesoscale eddy detection (self-contained).
-This consolidates settings that were previously split across
-config/DINO/DINO_4scale_cocoeast.py and config/DINO/coco_transformer.py
-into a single configuration file for simpler usage and distribution.
+This consolidates previous multi-file settings into a single configuration
+for simpler usage and distribution.
 """
 
 # ---- Data augmentation / encoder-decoder shared knobs (from coco_transformer.py) ----
@@ -30,7 +29,7 @@ same_loc = False
 proj_key = False
 key_aware = False
 
-# ---- Task/Dataset specific (from DINO_4scale_cocoeast.py) ----
+# ---- Task/Dataset specific ----
 # Two classes: Anticyclone(0) and Cyclone(1)
 num_classes = 2
 
@@ -51,7 +50,7 @@ onecyclelr = False
 multi_step_lr = False
 lr_drop_list = [33, 45]
 
-modelname = 'dino'
+modelname = 'pedetr'
 frozen_weights = None
 backbone = 'resnet50'
 use_checkpoint = False

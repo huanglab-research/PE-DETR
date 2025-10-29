@@ -71,7 +71,6 @@ We also benefited a lot from the following projects:
 
 - [DETR](https://github.com/facebookresearch/detr)
 - [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR)
-- [DINO](https://github.com/IDEA-Research/DINO)
 
 ## 📬 Contact
 
