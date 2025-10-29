@@ -1,4 +1,4 @@
-# PE-DETR: Physics-Enhanced DETR for Mesoscale Eddy Detection
+# PE-DETR: A Physics-Enhanced Detection Transformer for Mesoscale Eddy Detection
 
 This is the implementation of the paper: **Physics-Enhanced DETR for Mesoscale Eddy Detection**
 
@@ -6,7 +6,7 @@ This is the implementation of the paper: **Physics-Enhanced DETR for Mesoscale E
 
 
 ## Datasets
-Experiments on **manually annotated mesoscale eddy dataset**:
+Experiments on **manually annotated mesoscale eddy dataset**
 
 ## Model Framework
 ![PE-DETR Framework](figs/pe.jpg)
@@ -87,7 +87,7 @@ If you find our work helpful for your research, please consider citing:
 
 ```BibTeX
 @article{pe_detr_2025,
-  title   = {PE-DETR: Physics-Enhanced Detection Transformer for Mesoscale Eddy Detection},
+  title   = {PE-DETR: A Physics-Enhanced Detection Transformer for Mesoscale Eddy Detection},
   author  = {Wang, Yunqi and Huang, Lei and Nie, Jie and Wei, Zhiqiang},
   year    = {2025}
 }
