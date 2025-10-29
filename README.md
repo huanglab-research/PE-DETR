@@ -8,6 +8,8 @@ This is the implementation of the paper: **Physics-Enhanced DETR for Mesoscale E
 ## Datasets
 Experiments on **manually annotated mesoscale eddy dataset**:
 
+## Model Framework
+![PE-DETR Framework](figs/pe.jpg)
 
 ## Environment
 ```bash
