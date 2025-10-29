@@ -1,6 +1,6 @@
 # PE-DETR: A Physics-Enhanced Detection Transformer for Mesoscale Eddy Detection
 
-This is the implementation of the paper: **Physics-Enhanced DETR for Mesoscale Eddy Detection**
+This is the implementation of the paper: **PE-DETR: A Physics-Enhanced Detection Transformer for Mesoscale Eddy Detection**
 
 > ⚠ **Note:** The source code is currently incomplete and will be fully released once the manuscript is accepted by the journal.
 
