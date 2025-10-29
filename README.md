@@ -80,15 +80,4 @@ Feel free to contact us if you have any questions:
 - Institution: Ocean University of China
 
 ---
-
-## Citation
-
-If you find our work helpful for your research, please consider citing:
-
-```BibTeX
-@article{pe_detr_2025,
-  title   = {PE-DETR: A Physics-Enhanced Detection Transformer for Mesoscale Eddy Detection},
-  author  = {Wang, Yunqi and Huang, Lei and Nie, Jie and Wei, Zhiqiang},
-  year    = {2025}
-}
-```
+ 
