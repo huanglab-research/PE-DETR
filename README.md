@@ -46,7 +46,6 @@ python main.py \
     -c config/PEDETR_eddy.py \
     --coco_path /path/to/eddy_dataset \
     --use_physics \
-    --use_optflow_proxy \
     --use_phys_query_init \
     --use_ms_physics
 ```
@@ -57,7 +56,6 @@ python -m torch.distributed.launch --nproc_per_node=8 main.py \
     -c config/PEDETR_eddy.py \
     --coco_path /path/to/eddy_dataset \
     --use_physics \
-    --use_optflow_proxy \
     --use_phys_query_init \
     --use_ms_physics
 ```
