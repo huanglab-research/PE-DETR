@@ -70,7 +70,6 @@ class COCOVisualizer():
         ax = plt.gca()
         img = renorm(img).permute(1, 2, 0)
         # if os.environ.get('IPDB_SHILONG_DEBUG', None) == 'INFO':
-        #     import ipdb; ipdb.set_trace()
         ax.imshow(img)
         
         self.addtgt(tgt)

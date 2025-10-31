@@ -271,12 +271,10 @@ class RandomSelectBoxes():
         for idx, item in enumerate(boxs_list_tensor):
             ncnt = item.shape[0]
             nselect = int(random.random() * ncnt) # close in both sides, much faster than random.randint
-            # import ipdb; ipdb.set_trace()
             item = item[torch.randperm(ncnt)]
             # random.shuffle(item)
             box_known.append(item[:nselect])
             box_unknown.append(item[nselect:])
-        # import ipdb; ipdb.set_trace()
         # box_known_tensor = [torch.stack(i) if len(i) > 0 else torch.Tensor(0,4) for i in box_known]
         # box_unknown_tensor = [torch.stack(i) if len(i) > 0 else torch.Tensor(0,4) for i in box_unknown]
         # print('box_unknown_tensor:', box_unknown_tensor)
@@ -322,7 +320,6 @@ class MaskCrop():
         known_box = target['known_box']
         h,w = img.shape[1:] # h,w
         # imgsize = target['orig_size'] # h,w
-        # import ipdb; ipdb.set_trace()
         scale = torch.Tensor([w, h, w, h])
 
         # _cnt = 0
@@ -750,6 +747,5 @@ if __name__ == "__main__":
         )
     print('len(dataset_o365):', len(dataset_o365))
 
-    import ipdb; ipdb.set_trace()
 
     # ['/raid/liushilong/data/Objects365/train/patch16/objects365_v2_00908726.jpg', '/raid/liushilong/data/Objects365/train/patch6/objects365_v1_00320532.jpg', '/raid/liushilong/data/Objects365/train/patch6/objects365_v1_00320534.jpg']

@@ -173,19 +173,12 @@ class MSDeformAttn(nn.Module):
                 output = checkpoint.checkpoint(ms_deform_attn_core_pytorch_key_aware, query, value, key, input_padding_mask,
                                                input_spatial_shapes, sampling_locations, self.key_proj, self.value_proj,
                                                self.query_proj, attention_weights, self.add)
-            # 诊断用：若 key_aware 路径未产生 attention_weights，则构造一个基于采样偏移的代理权重
             if attention_weights is None:
-                # 使用采样偏移的幅值作为“远近”指标，越近权重越大
-                # sampling_offsets shape 对应于 sampling_locations 与 reference_points 的差异尺度
                 if not self.same_loc:
-                    # 由 sampling_locations 与 reference_points 计算偏移近似幅值
-                    # 直接使用 sampling_offsets 需要保留其构造前的张量，这里用 sampling_locations 与 reference_points 重构
-                    # 估算：以 reference_points 为中心，使用 sampling_locations 的相对位移作为偏移
                     ref = reference_points[:, :, None, :, None, :]
                     delta = sampling_locations - ref  # [N, Len_q, n_heads, n_levels, n_points, 2]
                     dist = (delta ** 2).sum(-1).sqrt()  # [N, Len_q, n_heads, n_levels, n_points]
                 else:
-                    # same_loc 情况等价处理
                     ref = reference_points[:, :, None, :, None, :]
                     delta = sampling_locations - ref
                     dist = (delta ** 2).sum(-1).sqrt()
@@ -204,7 +197,7 @@ class MSDeformAttn(nn.Module):
         # ---- Expose internals for diagnostics (non-intrusive) ----
         try:
             self.last_sampling_locations = sampling_locations     # [N, Len_q, n_heads, n_levels, n_points, 2]
-            self.last_attention_weights = attention_weights       # None 或 [N, Len_q, n_heads, n_levels, n_points]
+            self.last_attention_weights = attention_weights       # None or [N, Len_q, n_heads, n_levels, n_points]
             self.last_spatial_shapes = input_spatial_shapes       # [n_levels, 2]
         except Exception:
             pass

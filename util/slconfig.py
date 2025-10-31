@@ -127,7 +127,6 @@ class SLConfig(object):
             for c in cfg_dict_list:
                 if len(base_cfg_dict.keys() & c.keys()) > 0:
                     raise KeyError('Duplicate key is not allowed among bases')
-                    # TODO Allow the duplicate key while warnning user
                 base_cfg_dict.update(c)
 
             base_cfg_dict = SLConfig._merge_a_into_b(cfg_dict, base_cfg_dict)
@@ -152,7 +151,6 @@ class SLConfig(object):
         Returns:
             [dict]: [description]
         """
-        # import ipdb; ipdb.set_trace()
         if not isinstance(a, dict):
             return a
 
@@ -162,7 +160,6 @@ class SLConfig(object):
             
                 if not isinstance(b[k], dict) and not isinstance(b[k], list):
                     # if :
-                    # import ipdb; ipdb.set_trace()
                     raise TypeError(
                         f'{k}={v} in child config cannot inherit from base '
                         f'because {k} is a dict in the child config but is of '
@@ -350,7 +347,6 @@ class SLConfig(object):
         return iter(self._cfg_dict)
 
     def dump(self, file=None):
-        # import ipdb; ipdb.set_trace()
         if file is None:
             return self.pretty_text
         else:

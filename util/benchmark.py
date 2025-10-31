@@ -16,7 +16,6 @@ from fvcore.nn.jit_handles import Handle
 @torch.no_grad()
 def measure_average_inference_time(model, inputs, num_iters=100, warm_iters=5):
     ts = []
-    # note that warm-up iters. are excluded from the total iters.
     for iter_ in tqdm.tqdm(range(warm_iters + num_iters)):
         torch.cuda.synchronize()
         t_ = time.perf_counter()
@@ -75,7 +74,6 @@ def compute_gflops(model, dataset, approximated=True):
             warnings.filterwarnings("ignore", category=RuntimeWarning)
             res = flop_count_without_warnings(model, (inputs,), )[0]
         gflops = sum(res.values())
-        # import ipdb; ipdb.set_trace()
         gflops_list.append(gflops)
         imsize_list.append(list(img.shape))
     

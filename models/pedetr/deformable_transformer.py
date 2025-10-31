@@ -233,7 +233,6 @@ class DeformableTransformer(nn.Module):
                 self.tgt_embed = nn.Embedding(self.two_stage_add_query_num, d_model)
 
             if two_stage_learn_wh:
-                # import ipdb; ipdb.set_trace()
                 self.two_stage_wh_embedding = nn.Embedding(1, 2)
             else:
                 self.two_stage_wh_embedding = None
@@ -296,7 +295,6 @@ class DeformableTransformer(nn.Module):
         self.refpoint_embed = nn.Embedding(use_num_queries, 4)
         
         if self.random_refpoints_xy:
-            # import ipdb; ipdb.set_trace()
             self.refpoint_embed.weight.data[:, :2].uniform_(0,1)
             self.refpoint_embed.weight.data[:, :2] = inverse_sigmoid(self.refpoint_embed.weight.data[:, :2])
             self.refpoint_embed.weight.data[:, :2].requires_grad = False
@@ -349,7 +347,6 @@ class DeformableTransformer(nn.Module):
         #########################################################
         # Begin Encoder
         #########################################################
-        # import ipdb; ipdb.set_trace()
         src_tgt = src_flatten[:, level_start_index[4 - self.enc_scale]:]
         # pos_tgt = lvl_pos_embed_flatten[:, level_start_index[4 - self.enc_scale]:]
         memory, src_tgt, enc_intermediate_output, enc_intermediate_refpoints = self.encoder(
@@ -474,7 +471,6 @@ class DeformableTransformer(nn.Module):
                 hs_enc = output_memory.unsqueeze(0)
                 ref_enc = enc_outputs_coord_unselected.unsqueeze(0)
                 init_box_proposal = output_proposals
-                # import ipdb; ipdb.set_trace()
             else:
                 hs_enc = tgt_undetach.unsqueeze(0)
                 ref_enc = refpoint_embed_undetach.sigmoid().unsqueeze(0)
@@ -610,7 +606,6 @@ class TransformerEncoder(nn.Module):
         if self.num_layers > 0:
             if self.deformable_encoder:
                 reference_points = self.get_reference_points(spatial_shapes, valid_ratios, device=src.device)
-                # import ipdb; ipdb.set_trace()
 
         intermediate_output = []
         intermediate_ref = []
@@ -620,7 +615,6 @@ class TransformerEncoder(nn.Module):
             intermediate_ref.append(ref_token_coord)
 
         tgt = src_tgt
-        # import ipdb; ipdb.set_trace()
         reference_points_tgt = reference_points[:, level_start_index[4-self.enc_scale]:]
         pos_tgt = pos[:, level_start_index[4 - self.enc_scale]:]
         # intermediate_coord = []
@@ -804,7 +798,6 @@ class TransformerDecoder(nn.Module):
                 reference_points_input = None
 
             # conditional query
-            # import ipdb; ipdb.set_trace()
             raw_query_pos = self.ref_point_head(query_sine_embed) # nq, bs, 256
             pos_scale = self.query_scale(output) if self.query_scale is not None else 1
             query_pos = pos_scale * raw_query_pos
@@ -818,7 +811,6 @@ class TransformerDecoder(nn.Module):
                 query_sine_embed[..., :self.d_model // 2] *= (refHW_cond[..., 1] / reference_points[..., 3]).unsqueeze(-1)
 
             # main process
-            # import ipdb; ipdb.set_trace()
             dropflag = False
             if self.dec_layer_dropout_prob is not None:
                 prob = random.random()
@@ -855,7 +847,6 @@ class TransformerDecoder(nn.Module):
 
                 # select # ref points
                 if self.dec_layer_number is not None and layer_id != self.num_layers - 1:
-                    # import ipdb; ipdb.set_trace()
                     nq_now = new_reference_points.shape[0]
                     select_number = self.dec_layer_number[layer_id + 1]
                     if nq_now != select_number:

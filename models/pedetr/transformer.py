@@ -188,7 +188,6 @@ class Transformer(nn.Module):
                 self.tgt_embed = nn.Embedding(self.two_stage_add_query_num, d_model)
 
             if two_stage_learn_wh:
-                # import ipdb; ipdb.set_trace()
                 self.two_stage_wh_embedding = nn.Embedding(1, 2)
             else:
                 self.two_stage_wh_embedding = None
@@ -259,7 +258,6 @@ class Transformer(nn.Module):
         self.refpoint_embed = nn.Embedding(use_num_queries, 4)
         
         if self.random_refpoints_xy:
-            # import ipdb; ipdb.set_trace()
             self.refpoint_embed.weight.data[:, :2].uniform_(0,1)
             self.refpoint_embed.weight.data[:, :2] = inverse_sigmoid(self.refpoint_embed.weight.data[:, :2])
             self.refpoint_embed.weight.data[:, :2].requires_grad = False
@@ -369,7 +367,6 @@ class Transformer(nn.Module):
 
         if self.two_stage_type in ['standard', 'combine', 'enceachlayer', 'enclayer1']:
             if self.two_stage_learn_wh:
-                # import ipdb; ipdb.set_trace()
                 input_hw = self.two_stage_wh_embedding.weight[0]
             else:
                 input_hw = None
@@ -394,7 +391,6 @@ class Transformer(nn.Module):
             topk = self.num_queries
             topk_proposals = torch.topk(enc_outputs_class_unselected.max(-1)[0], topk, dim=1)[1] # bs, nq
             
-            # import ipdb; ipdb.set_trace()
 
             # gather boxes
             refpoint_embed_undetach = torch.gather(enc_outputs_coord_unselected, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 4)) # unsigmoid
@@ -417,7 +413,6 @@ class Transformer(nn.Module):
             #     tgt = tgt_undetach.detach()
 
             if refpoint_embed is not None:
-                # import ipdb; ipdb.set_trace()
                 refpoint_embed=torch.cat([refpoint_embed,refpoint_embed_],dim=1)
                 tgt=torch.cat([tgt,tgt_],dim=1)
             else:
@@ -434,7 +429,6 @@ class Transformer(nn.Module):
             refpoint_embed_ = self.refpoint_embed.weight[:, None, :].repeat(1, bs, 1).transpose(0, 1) # nq, bs, 4
 
             if refpoint_embed is not None:
-                # import ipdb; ipdb.set_trace()
                 refpoint_embed=torch.cat([refpoint_embed,refpoint_embed_],dim=1)
                 tgt=torch.cat([tgt,tgt_],dim=1)
             else:
@@ -486,7 +480,6 @@ class Transformer(nn.Module):
                 hs_enc = output_memory.unsqueeze(0)
                 ref_enc = enc_outputs_coord_unselected.unsqueeze(0)
                 init_box_proposal = output_proposals
-                # import ipdb; ipdb.set_trace()
             else:
                 hs_enc = tgt_undetach.unsqueeze(0)
                 ref_enc = refpoint_embed_undetach.sigmoid().unsqueeze(0)
@@ -613,7 +606,6 @@ class TransformerEncoder(nn.Module):
         if self.num_layers > 0:
             if self.deformable_encoder:
                 reference_points = self.get_reference_points(spatial_shapes, valid_ratios, device=src.device)
-                # import ipdb; ipdb.set_trace()
 
         intermediate_output = []
         intermediate_ref = []
@@ -789,7 +781,6 @@ class TransformerDecoder(nn.Module):
                 reference_points_input = None
 
             # conditional query
-            # import ipdb; ipdb.set_trace()
             raw_query_pos = self.ref_point_head(query_sine_embed) # nq, bs, 256
             pos_scale = self.query_scale(output) if self.query_scale is not None else 1
             query_pos = pos_scale * raw_query_pos
@@ -803,7 +794,6 @@ class TransformerDecoder(nn.Module):
                 query_sine_embed[..., :self.d_model // 2] *= (refHW_cond[..., 1] / reference_points[..., 3]).unsqueeze(-1)
 
             # main process
-            # import ipdb; ipdb.set_trace()
             dropflag = False
             if self.dec_layer_dropout_prob is not None:
                 prob = random.random()
@@ -840,17 +830,14 @@ class TransformerDecoder(nn.Module):
 
                 # select # ref points
                 if self.dec_layer_number is not None and layer_id != self.num_layers - 1:
-                    # import ipdb; ipdb.set_trace()
                     nq_now = new_reference_points.shape[0]
                     select_number = self.dec_layer_number[layer_id + 1]
                     if nq_now != select_number:
                         class_unselected = self.class_embed[layer_id](output) # nq, bs, 91
                         topk_proposals = torch.topk(class_unselected.max(-1)[0], select_number, dim=0)[1] # new_nq, bs
                         new_reference_points = torch.gather(new_reference_points, 0, topk_proposals.unsqueeze(-1).repeat(1, 1, 4)) # unsigmoid
-                        # import ipdb; ipdb.set_trace()
 
                 # if os.environ.get('IPDB_DEBUG_SHILONG', None) == 'INFO':
-                #     import ipdb; ipdb.set_trace()
                 if self.rm_detach and 'dec' in self.rm_detach:
                     reference_points = new_reference_points
                 else:
@@ -865,7 +852,6 @@ class TransformerDecoder(nn.Module):
             intermediate.append(self.norm(output))
             # select # tgt
             if self.dec_layer_number is not None and layer_id != self.num_layers - 1:
-                # import ipdb; ipdb.set_trace()
                 if nq_now != select_number:
                     output = torch.gather(output, 0, topk_proposals.unsqueeze(-1).repeat(1, 1, self.d_model)) # unsigmoid
 
@@ -877,7 +863,6 @@ class TransformerDecoder(nn.Module):
         # ]
         
         # if os.environ.get('IPDB_DEBUG_SHILONG') == 'INFO':
-        #     import ipdb; ipdb.set_trace()
 
         return [
             [itm_out.transpose(0, 1) for itm_out in intermediate],
@@ -886,7 +871,6 @@ class TransformerDecoder(nn.Module):
 
 
 def _get_clones(module, N, layer_share=False):
-    # import ipdb; ipdb.set_trace()
     if layer_share:
         return nn.ModuleList([module for i in range(N)])
     else:

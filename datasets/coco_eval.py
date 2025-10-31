@@ -110,7 +110,6 @@ class CocoEvaluator(object):
                     ]
                 )
             except:
-                import ipdb; ipdb.set_trace()
         return coco_results
 
     def prepare_for_coco_segmentation(self, predictions):

@@ -91,7 +91,6 @@ def ms_deform_attn_core_pytorch_key_aware(query, value, key, input_padding_mask,
                                           mode='bilinear', padding_mode='zeros', align_corners=False)
         sampling_key_list.append(sampling_key_l__)
     # (N_, Lq_, M_, L_, P_) -> (N_, M_, Lq_, L_, P_) -> (N_, M_, 1, Lq_, L_*P_)
-    # import ipdb; ipdb.set_trace()
     key = torch.stack(sampling_key_list, dim=-2).flatten(-2)
     value = torch.stack(sampling_value_list, dim=-2).flatten(-2)
     # N_*M_, D_, Lq_, P_ -> N_*M_, D_, Lq_, L_, P_ -> N_*M_, D_, Lq_, L_*P_
@@ -115,7 +114,6 @@ def ms_deform_attn_core_pytorch_key_aware(query, value, key, input_padding_mask,
 
     query = query.unsqueeze(-2)  # N*M*Lq, D-> N*M*Lq, 1, D
     dk = query.size()[-1]
-    # import ipdb; ipdb.set_trace()
     # attention_weights = torch.matmul(key, query[..., None]).squeeze(-1)/ math.sqrt(dk)
     # attention_weights_linear = attention_weights_linear.transpose(1, 2).reshape(N_ * M_*Lq_, 1, L_ * P_)
     # (N_, Lq_, M_, L_, P_) -> (N_, M_, Lq_, L_, P_)

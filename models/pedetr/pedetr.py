@@ -228,7 +228,6 @@ class PEDETR(nn.Module):
         self.refpoint_embed = nn.Embedding(use_num_queries, self.query_dim)
 
         if self.random_refpoints_xy:
-            # import ipdb; ipdb.set_trace()
             self.refpoint_embed.weight.data[:, :2].uniform_(0,1)
             self.refpoint_embed.weight.data[:, :2] = inverse_sigmoid(self.refpoint_embed.weight.data[:, :2])
             self.refpoint_embed.weight.data[:, :2].requires_grad = False
@@ -419,7 +418,6 @@ class PEDETR(nn.Module):
             out['interm_outputs_for_matching_pre'] = {'pred_logits': interm_class, 'pred_boxes': init_box_proposal}
 
             # prepare enc outputs
-            # import ipdb; ipdb.set_trace()
             if hs_enc.shape[0] > 1:
                 enc_outputs_coord = []
                 enc_outputs_class = []
@@ -806,7 +804,6 @@ class PostProcess(nn.Module):
 
         if self.nms_iou_threshold > 0:
             item_indices = [nms(b, s, iou_threshold=self.nms_iou_threshold) for b,s in zip(boxes, scores)]
-            # import ipdb; ipdb.set_trace()
             results = [{'scores': s[i], 'labels': l[i], 'boxes': b[i]} for s, l, b, i in zip(scores, labels, boxes, item_indices)]
         else:
             results = [{'scores': s, 'labels': l, 'boxes': b} for s, l, b in zip(scores, labels, boxes)]

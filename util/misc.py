@@ -187,7 +187,6 @@ class MetricLogger(object):
         loss_str = []
         for name, meter in self.meters.items():
             # print(name, str(meter))
-            # import ipdb;ipdb.set_trace()
             if meter.count > 0:
                 loss_str.append(
                     "{}: {}".format(name, str(meter))
@@ -238,7 +237,6 @@ class MetricLogger(object):
         for obj in iterable:
             data_time.update(time.time() - end)
             yield obj
-            # import ipdb; ipdb.set_trace()
             iter_time.update(time.time() - end)
             if i % print_freq == 0 or i == len(iterable) - 1:
                 eta_seconds = iter_time.global_avg * (len(iterable) - i)
@@ -283,7 +281,6 @@ def get_sha():
 
 
 def collate_fn(batch):
-    # import ipdb; ipdb.set_trace()
     batch = list(zip(*batch))
     batch[0] = nested_tensor_from_tensor_list(batch[0])
     return tuple(batch)
@@ -373,14 +370,12 @@ class NestedTensor(object):
 
 
 def nested_tensor_from_tensor_list(tensor_list: List[Tensor]):
-    # TODO make this more general
     if tensor_list[0].ndim == 3:
         if torchvision._is_tracing():
             # nested_tensor_from_tensor_list() does not export well to ONNX
             # call _onnx_nested_tensor_from_tensor_list() instead
             return _onnx_nested_tensor_from_tensor_list(tensor_list)
 
-        # TODO make it support different-sized images
         max_size = _max_by_axis([list(img.shape) for img in tensor_list])
         # min_size = tuple(min(s) for s in zip(*[img.shape for img in tensor_list]))
         batch_shape = [len(tensor_list)] + max_size

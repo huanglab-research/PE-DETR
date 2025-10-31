@@ -39,7 +39,7 @@ class Trainer(DefaultTrainer):
         Create evaluator(s) for a given dataset.
         This uses the special metadata "evaluator_type" associated with each builtin dataset.
         For your own dataset, you can simply create an evaluator manually in your
-        script and do not have to worry about the hacky if-else logic here.
+        script.
         """
         if output_folder is None:
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
