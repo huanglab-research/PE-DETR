@@ -4,10 +4,6 @@ This is the implementation of the paper: **PE-DETR: A Physics-Enhanced Detection
 
 > ⚠ **Note:** The source code is currently incomplete and will be fully released once the manuscript is accepted by the journal.
 
-
-## Datasets
-Experiments on **manually annotated mesoscale eddy dataset**
-
 ## Model Framework
 ![PE-DETR Framework](figs/pe.jpg)
 
@@ -32,11 +28,17 @@ pip install -r requirements.txt
 
 3. Compile CUDA operators
 ```bash
-cd models/dino/ops
+cd models/pedetr/ops
 python setup.py build install
 python test.py  # Verify installation
 cd ../../..
 ```
+
+## Dataset Preparation
+
+**Train Set:** Manually annotated mesoscale eddy dataset (Aug20, 2016–Feb9, 2021, 1,635 samples, ≈81.8%)
+
+**Test Sets:** Manually annotated mesoscale eddy dataset (Feb10, 2021–Feb9, 2022, 365 samples, ≈18.2%)
 
 ## Training/Resume Training
 
@@ -63,20 +65,11 @@ python -m torch.distributed.launch --nproc_per_node=8 main.py \
 
 ## Acknowledgment
 
-Our work is based on the following project:
-
-- [Lite-DETR](https://github.com/IDEA-Research/Lite-DETR)
-
-We also benefited a lot from the following projects:
-
-- [DETR](https://github.com/facebookresearch/detr)
-- [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR)
+We appreciate the great work of [Lite-DETR](https://github.com/IDEA-Research/Lite-DETR), [DETR](https://github.com/facebookresearch/detr), [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR), etc. Please refer to the original repo for more usage and documents.
 
 ## 📬 Contact
 
-Feel free to contact us if you have any questions:
-- Author: [wangyunqi@stu.ouc.edu.cn](mailto:wangyunqi@stu.ouc.edu.cn)
-- Institution: Ocean University of China
+Feel free to contact me if there is any question. (Yunqi Wang: wangyunqi@stu.ouc.edu.cn)
 
 ---
  
